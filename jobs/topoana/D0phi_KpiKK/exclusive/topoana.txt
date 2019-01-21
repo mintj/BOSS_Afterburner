@@ -1,0 +1,15 @@
+Decay trees and their respective final states:
+
+index:  1	iDcyTr:  0	iDcyFSt:  0	nEtrs:  1000	nCmltEtrs:  1000
+  e+ e- --> J/psi
+  J/psi --> phi D0
+  phi --> pi+ K-
+  K- --> K+ K-
+( e+ e- --> pi+ K+ K- D0 )
+
+
+Decay final states:
+
+index:  1	iDcyFSt:  0	nEtrs:  1000	nCmltEtrs:  1000
+  e+ e- --> pi+ K+ K- D0
+
