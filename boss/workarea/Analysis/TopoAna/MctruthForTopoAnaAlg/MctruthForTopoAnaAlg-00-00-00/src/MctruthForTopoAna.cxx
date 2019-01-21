@@ -89,13 +89,13 @@
 				return(StatusCode::FAILURE);  
 			}
 
-		/// <li> Attempt to get 'Monte Carlo truth'.
+		/// <li> Prepare loop over collection of MC particles.
 			/// <ul>
 			m_nmcps = 0; /// <li> Reset the `m_nmcps` counter for the number of MC particles.
 			const int incPid1 = 91; /// <li> `91` is the PDG code of cluster.
 			const int incPid2 = 92; /// <li> `92` is the PDG code of string.
-			bool incPdcy(false);
-			int rootIndex(-1);
+			bool incPdcy(false);    /// <li> Recording of the MC particles starts only when this boolean is set to `true` during the loop.
+			int rootIndex(-1);      /// <li> This index serves as a correction factor: the track index should stand for 0 if we are looking at a 'primary' particle, like \f$J/\psi\f$. All particles that come before it in the decay chain are, however, also indexed, so we should use the track index of this 'primary' particle as an offset.
 			/// </ul>
 
 		/// <li> Loop over collection of MC particle objects. An array containing a selection of MC truth particles is created here.

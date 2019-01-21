@@ -270,7 +270,6 @@
 
 	/**
 	 * @brief Currently does nothing. Cut flow could be printed in this step.
-	 * @todo Add log output to `finalize` step.
 	 */
 	StatusCode D0phi_KpiKK::finalize_rest()
 	{

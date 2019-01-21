@@ -265,26 +265,27 @@
 				}
 
 				/// <li> Loop over collection of MC particles (`Event::McParticleCol`). For more info on the data available in `McParticle`, see <a href="http://bes3.to.infn.it/Boss/7.0.2/html/McParticle_8h-source.html">here</a>. Only add to `fMcParticles` if the `McParticle` satisfies:
-				Event::McParticleCol::iterator iter_mc = fMcParticleCol->begin();
-				bool jpsiDecay(false);
+				bool startRecording(false);
 				int rootIndex(-1);
-				for (; iter_mc!=fMcParticleCol->end(); iter_mc++) {
+				for(Event::McParticleCol::iterator it = fMcParticleCol->begin(); it!=fMcParticleCol->end(); it++) {
 					/// <ul>
-					/// <li> Do not add primary parties @todo Why?
-					if( (*iter_mc)->primaryParticle()) continue;
-					/// <li> Only add if the decay has been generated. @todo Why? What does this mean precisely?
-					if(!(*iter_mc)->decayFromGenerator()) continue;
-					/// <li> Get root index @todo What is the root index and why is it related to \f$J/\psi\f$?
-					if( (*iter_mc)->particleProperty() == 443) {
-						jpsiDecay=true;
-						rootIndex=(*iter_mc)->trackIndex();
+					/// <li> Do not add primary parties. Primary particles do not have a mother particle and are therefore not of interest.
+					if( (*it)->primaryParticle()) continue;
+					/// <li> Only add if the decay has been generated. @todo Why only decays from generators? What does this mean precisely?
+					if(!(*it)->decayFromGenerator()) continue;
+					/// <li> Get root index. We are not interested in what happens before the emergence of \f$J/\psi\f$ (like the steps from \f$e^+e^-\f$ to a \f$Z\f$ etc). The root root index determines the first particle that is of interest to us. One can use `(*it)->particleProperty() == 443` here if one is certain that the data set at hand concerns \f$J/\psi\f$, but the below method (from the `MctruthForTopoAna` package) is more general.
+					if(
+						(*it)->particleProperty() == incPid1 ||
+						(*it)->particleProperty() == incPid2 ) {
+						startRecording = true;
+						rootIndex = (*it)->trackIndex();
 					}
 					/// <li> Do not add \f$J/\psi\f$ (PDG code 443).
-					if(!jpsiDecay) continue;
+					if(!startRecording) continue;
 					/// <li> Add the pointer to the `fMcParticles` vector.
-					fMcParticles.push_back(*iter_mc);
+					fMcParticles.push_back(*it);
 					/// <li> <b>Write</b> MC truth initial 4-momentum info if required.
-					if(fWrite_mctruth) WriteMcTruth(*iter_mc, "mctruth", fMap_mctruth);
+					if(fWrite_mctruth) WriteMcTruth(*it, "mctruth", fMap_mctruth);
 					/// </ul>
 				} // end of for loop
 				/// </ol>
