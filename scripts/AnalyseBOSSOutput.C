@@ -1,11 +1,9 @@
 /// @addtogroup BOSS_Afterburner_scripts
 /// @{
 	
-/**
 /// Simple script that allows to quickly investigate the contents of a ROOT file that has been produced with BOSS.
 /// @author   Remco de Boer 雷穆克 (r.e.deboer@students.uu.nl or remco.de.boer@ihep.ac.cn)
 /// @date     November 5th, 2018
- */
 
 
 
@@ -92,10 +90,15 @@
 						file.Draw("fit4c_best", "mJpsi", 400, 3.0967, 3.09685, "E1", config.fLogY.value.data());
 						file.Draw("fit4c_best", "mphi",  400,  .97,   1.7,     "E1", config.fLogY.value.data());
 						/// -# Draw invariant mass distributions with cuts applied on the other candidate
-						DrawAndSave(&file["fit4c_best"].GetChain(), "mphi",     "mD0>1.6  && mD0<2.0",  "E1",   config.fLogY.value.data());
-						DrawAndSave(&file["fit4c_best"].GetChain(), "mD0",      "mphi>1.0 && mphi<1.1", "E1",   config.fLogY.value.data());
-						DrawAndSave(&file["fit4c_best"].GetChain(), "mD0:mphi",
-							"mD0>1.6  && mD0<2.0 && mphi>1.0 && mphi<1.1", "colz", config.fLogZ.value.data());
+						// DrawAndSave(&file["fit4c_best"].GetChain(), "mphi", "mD0 >1.7 && mD0 <2.0", "E1", config.fLogY.value.data());
+						// DrawAndSave(&file["fit4c_best"].GetChain(), "mD0",  "mphi>1.0 && mphi<1.1", "E1", config.fLogY.value.data());
+						// DrawAndSave(&file["fit4c_best"].GetChain(), "mD0",  "mD0 >1.7  && mD0 <2.0", "E1", config.fLogY.value.data());
+						// DrawAndSave(&file["fit4c_best"].GetChain(), "mphi", "mphi>0.95 && mphi<1.1", "E1", config.fLogY.value.data());
+						// DrawAndSave(&file["fit4c_best"].GetChain(), "mD0:mphi", "mD0>1.7  && mD0<2.0 && mphi>0.95 && mphi<1.1", "colz", config.fLogZ.value.data());
+						// DrawAndSave(&file["fit4c_best"].GetChain(), "mD0",  "mD0 >1.859 && mD0 <1.885", "E1", config.fLogY.value.data());
+						// DrawAndSave(&file["fit4c_best"].GetChain(), "mphi", "mphi>0.996 && mphi<1.046", "E1", config.fLogY.value.data());
+						// DrawAndSave(&file["fit4c_best"].GetChain(), "mD0:mphi", "mD0>1.859 && mD0<1.885 && mphi>0.996 && mphi<1.046", "colz", config.fLogZ.value.data());
+						DrawAndSave(&file["fit4c_best"].GetChain(), "mphi", "mD0>1.859 && mD0<1.885 && mphi>0.996 && mphi<1.046", "E1", config.fLogY.value.data());
 						/// -# Draw 3-momentum distributions
 						file.Draw("fit4c_all",  "pD0",  400, .4, 1.15, "E1", config.fLogY.value.data());
 						file.Draw("fit4c_all",  "pphi", 400, .4, 1.15, "E1", config.fLogY.value.data());
@@ -144,8 +147,8 @@
 				ReconstructedParticle Jpsi(443, "#D^{0}#phi");
 
 			// * Create invariant mass histogram
-				TH1F* hist_D0  = file["fit4c"].GetInvariantMassHistogram("mD0",   D0,   500);
-				TH1F* hist_phi = file["fit4c"].GetInvariantMassHistogram("mphi",  phi,  500);
+				TH1F* hist_D0  = file["fit4c_best"].GetInvariantMassHistogram("mD0",   D0,   500);
+				TH1F* hist_phi = file["fit4c_best"].GetInvariantMassHistogram("mphi",  phi,  500);
 				// TH1F* hist_Jpsi = file["fit4c"].GetInvariantMassHistogram("mJpsi", Jpsi, 2000); //! useless plot
 
 			// * Fit double gaussian
