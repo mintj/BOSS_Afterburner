@@ -137,6 +137,13 @@
 						file.Draw("fit4c_best", "mphi:pphi", "colz", config.fLogZ.value.data());
 					}
 				}
+				if(config.fDraw_topology.value) {
+					file.Draw("topology", "chi2");
+					file.Draw("topology", "mD0");
+					file.Draw("topology", "mphi");
+					file.Draw("topology", "pD0");
+					file.Draw("topology", "pphi");
+				}
 			}
 
 		// * PERFORM FITS * //

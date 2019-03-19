@@ -63,6 +63,7 @@
 
 		/// @name Draw options
 			///@{
+			ArgPair<bool> fDraw_topology; ///< Whether or not to draw `double` information from the `topology` branch (if available).
 			ArgPair<bool> fDraw_mctruth; ///< Whether or not to draw the MC truth parameters.
 			ArgPair<bool> fDraw_mult; ///< Whether or not to draw the multiplicity branches.
 			ArgPair<bool> fDraw_tof; ///< Whether or not to draw the `"tof*"` branches.
@@ -123,6 +124,7 @@
 		fSetranges    ("Set plot ranges",         true),
 		fPlotstats    ("Plot statistics",         false),
 		fPureplot     ("Plot raw data",           true),
+		fDraw_topology("Draw topology",           false),
 		fDraw_mctruth ("Draw mctruth",            false),
 		fDraw_mult    ("Draw multiplicites",      false),
 		fDraw_vertex  ("Draw vertex",             false),
