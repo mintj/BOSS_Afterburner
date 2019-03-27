@@ -8,7 +8,6 @@
 	#include "AxisBinning.h"
 	#include "TString.h"
 	#include <vector>
-	#include <string>
 
 
 
@@ -45,7 +44,6 @@
 	class BranchPlotOptions
 	{
 	public:
-		BranchPlotOptions(const std::string &input);
 		BranchPlotOptions(const TString &input);
 
 

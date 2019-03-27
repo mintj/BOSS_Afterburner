@@ -34,17 +34,17 @@
 			}
 		/// -# Loop over list of `TBranches` and determine `typename` of the branch. The data type of a branch can be determined from the last character of its title. See <a href="https://root.cern.ch/doc/master/classTTree.html#a8a2b55624f48451d7ab0fc3c70bfe8d7">`TTree`</a> for the labels of each type.
 			while((obj = next())) {
-				std::string type(obj->GetTitle());
+				TString type{obj->GetTitle()};
 				if(print_branches) {
 					std::cout << "   " << std::setw(18) << std::left << type;
 					if(print_averages) std::cout << std::setw(12) << std::right << ComputeMean(&fChain, obj->GetName());
 				}
-				if(type.find('[') != std::string::npos) {
+				if(type.Contains("[")) {
 					if(print_branches) std::cout << " (not loaded)" << std::endl;
 					continue; /// If branch title contains a `[`, this means it is an array and it will not be loaded.
 				}
 				if(print_branches) std::cout << std::endl;
-				switch(type.back()) {
+				switch(type(type.Length()-1)) {
 					case 'B' : SetAddress(obj, fMap_B); break;
 					case 'b' : SetAddress(obj, fMap_b); break;
 					case 'S' : SetAddress(obj, fMap_S); break;

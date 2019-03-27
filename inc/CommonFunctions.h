@@ -91,30 +91,26 @@
 		namespace Print
 		{
 			template<typename TYPE>
-			std::string CommaFormattedString(TYPE number);
+			const TString CommaFormattedString(TYPE number);
 		}
 		/// Namespace containing functions for `string` manipulation.
 		namespace String
 		{
-			std::string &Trim(std::string &input);
-			std::string &Trim(std::string &input, char c);
-			TString &Trim(TString &input);
-			TString &Trim(TString &input, char c);
-			const bool IsComment(std::string line);
-			const bool IsComment(const TString &line);
+			void RemoveWhitespaces(TString &line);
+			const bool IsComment(TString line);
 		}
 		/// Namespace containing functions related to debugging and making macro's handle errors.
 		namespace TerminalIO
 		{
-			void ColourPrint(const char code, const std::string &message, const std::string &quantifier="");
-			void PrintFatalError(const std::string &message);
-			void PrintSuccess(const std::string &message);
-			void PrintWarning(const std::string &message);
+			void ColourPrint(const char code, const TString &message, const TString &quantifier="");
+			void PrintFatalError(const TString &message);
+			void PrintSuccess(const TString &message);
+			void PrintWarning(const TString &message);
 			bool IsEmptyPtr(void* ptr);
 			template<class TYPE> inline
-			TYPE& GetFromMap(std::unordered_map<std::string, TYPE> &map, const std::string &key, const std::string &mapName="");
+			TYPE& GetFromMap(std::unordered_map<std::string, TYPE> &map, const TString &key, const TString &mapName="");
 			template<class TYPE> inline
-			bool MapHasKey(std::unordered_map<std::string, TYPE> &map, const std::string &key);
+			bool MapHasKey(std::unordered_map<std::string, TYPE> &map, const TString &key);
 		}
 	}
 
@@ -172,13 +168,13 @@
 
 	/// Construction to `try` and `catch` an exception that comes from `std::map::at`.
 	template<class TYPE> inline
-	TYPE& CommonFunctions::TerminalIO::GetFromMap(std::unordered_map<std::string, TYPE> &map, const std::string &key, const std::string &mapName)
+	TYPE& CommonFunctions::TerminalIO::GetFromMap(std::unordered_map<std::string, TYPE> &map, const TString &key, const TString &mapName)
 	{
 		try {
-			return map.at(key);
+			return map.at(key.Data());
 		} catch(std::exception) {
-			std::string message = Form("Could not load key \"%s\"", key.c_str());
-			if(!mapName.size()) message += Form(" from map \"%s\"", mapName.c_str());
+			TString message = Form("Could not load key \"%s\"", key.Data());
+			if(mapName.EqualTo("")) message += Form(" from map \"%s\"", mapName.Data());
 			message += Form("\n   --->> check file %s", __BASE_FILE__);
 			message += Form("\n   --->> check line %s:%d", __FILE__, __LINE__);
 			PrintFatalError(message);
@@ -189,9 +185,9 @@
 	/// Returns `true` if `map` has a certain `key`, and returns `false` if not`.
 	/// This function makes use of `std::map::find`.
 	template<class TYPE> inline
-	bool CommonFunctions::TerminalIO::MapHasKey(std::unordered_map<std::string, TYPE> &map, const std::string &key)
+	bool CommonFunctions::TerminalIO::MapHasKey(std::unordered_map<std::string, TYPE> &map, const TString &key)
 	{
-		return !(map.find(key) == map.end());
+		return !(map.find(key.Data()) == map.end());
 	}
 
 
@@ -222,16 +218,14 @@
 // * =================================== * //
 
 
-	/// Create a std::string from a number that has a number between each 
-	/// @param number Number that you want to format.
-	/// @return Formatted std::string.
+	/// Create a `TString` from a number that has a number between each 
 	template<typename TYPE> inline
-	std::string CommonFunctions::Print::CommaFormattedString(TYPE number)
+	const TString CommonFunctions::Print::CommaFormattedString(TYPE number)
 	{
-		std::string output = std::to_string(number);
-		int insertPosition = output.length()-3;
+		TString output(Form("%d", number));
+		int insertPosition = output.Length()-3;
 		while (insertPosition > 0) {
-			output.insert(insertPosition, ",");
+			output.Insert(insertPosition, ",");
 			insertPosition -= 3;
 		}
 		return output;

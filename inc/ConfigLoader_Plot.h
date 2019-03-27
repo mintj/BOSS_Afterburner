@@ -9,8 +9,8 @@
 	#include "CommonFunctions.h"
 	#include "ConfigLoader.h"
 	#include "ConfigParameter.h"
+	#include "TString.h"
 	#include <list>
-	#include <string>
 
 
 
@@ -27,10 +27,10 @@
 	class ConfigLoader_Plot : public ConfigLoader
 	{
 	public:
-		ConfigLoader_Plot(const std::string &path, const bool print=true) : ConfigLoader(path, print) { LoadConfiguration(path); }
+		ConfigLoader_Plot(const TString &path, const bool print=true) : ConfigLoader(path, print) { LoadConfiguration(path); }
 		/// @name I/O strings
 			///@{
-			ConfigParameter<std::string> fInputFilename{"Input file or directory", "NOFILE"};
+			ConfigParameter<TString> fInputFilename{"Input file or directory", "NOFILE"};
 			ConfigParameter<std::list<BranchPlotOptions> > fListOfbranches{"Print these branches"};
 			///@}
 

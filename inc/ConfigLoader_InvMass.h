@@ -9,8 +9,8 @@
 	#include "CommonFunctions.h"
 	#include "ConfigLoader.h"
 	#include "ConfigParameter.h"
+	#include "TString.h"
 	#include <list>
-	#include <string>
 
 
 
@@ -27,12 +27,12 @@
 	class ConfigLoader_InvMass : public ConfigLoader
 	{
 	public:
-		ConfigLoader_InvMass(const std::string &path, const bool print=true) : ConfigLoader(path, print) { LoadConfiguration(path); }
+		ConfigLoader_InvMass(const TString &path, const bool print=true) : ConfigLoader(path, print) { LoadConfiguration(path); }
 		/// @name I/O strings
 			///@{
-			ConfigParameter<std::string> Filename_excl{"Exclusive MC file"};
-			ConfigParameter<std::string> Filename_incl{"Inclusive MC file"};
-			ConfigParameter<std::string> Filename_data{"Measurements file"};
+			ConfigParameter<TString> Filename_excl{"Exclusive MC file"};
+			ConfigParameter<TString> Filename_incl{"Inclusive MC file"};
+			ConfigParameter<TString> Filename_data{"Measurements file"};
 			ConfigParameter<std::list<BranchPlotOptions> > ListOfbranches_excl{"Plot these inclusive MC branches"};
 			ConfigParameter<std::list<BranchPlotOptions> > ListOfbranches_incl{"Plot these exclusive MC branches"};
 			ConfigParameter<std::list<BranchPlotOptions> > ListOfbranches_data{"Plot these measurement branches"};

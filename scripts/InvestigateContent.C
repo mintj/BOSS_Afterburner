@@ -29,7 +29,7 @@
 		/// -# Attempt to load input ROOT file as a `BOSSOutputLoader` object).
 		BOSSOutputLoader file(config.fInputFilename, false, false);
 		if(file.IsZombie()) {
-			TerminalIO::PrintFatalError(Form("Failed to load ROOT file\n  \"%s\"", config.fInputFilename->c_str()));
+			TerminalIO::PrintFatalError(Form("Failed to load ROOT file\n  \"%s\"", config.fInputFilename->Data()));
 			return;
 		}
 

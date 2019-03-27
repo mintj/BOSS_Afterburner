@@ -16,12 +16,6 @@
 // * =========================== * //
 
 
-	BranchPlotOptions::BranchPlotOptions(const std::string &input)
-	{
-		Import(input);
-	}
-
-
 	BranchPlotOptions::BranchPlotOptions(const TString &input)
 	{
 		Import(input);
@@ -132,8 +126,8 @@
 		if(treename.Contains(">")) {
 			fTreeName.Remove(treename.First('>'));
 			fOutputFileName.Remove(0, treename.First('>')+1);
-			String::Trim(fTreeName);
-			String::Trim(fOutputFileName);
+			String::RemoveWhitespaces(fTreeName);
+			String::RemoveWhitespaces(fOutputFileName);
 		}
 	}
 
@@ -207,13 +201,13 @@
 	const char* BranchPlotOptions::VarExp() const
 	{
 		/// -# Return `nullptr` if `fTreeName` of `fListOfBranches` is empty.
-			if(!fTreeName.Length()) return nullptr;
+			if(fTreeName.EqualTo("")) return nullptr;
 			if(!fListOfBranches.size()) return nullptr;
 		/// -# Build string of branch names.
 			TString varexp;
 			bool setbinning { true };
 			for(auto &branch : fListOfBranches) {
-				varexp += branch.AxisName().c_str();
+				varexp += branch.AxisName();
 				varexp += ":";
 				setbinning &= branch.IsOK();
 			}
@@ -238,7 +232,7 @@
 	const TString BranchPlotOptions::BuildOriginalString() const
 	{
 		/// -# Return a `nullptr` if this `BranchPlotOptions` object does not have branches or a tree name.
-			if(!fTreeName.Length())     return nullptr;
+			if(fTreeName.EqualTo(""))     return nullptr;
 			if(!fListOfBranches.size()) return nullptr;
 		/// -# The line starts the name of the `TTree`.
 			TString line{fTreeName};
@@ -247,7 +241,7 @@
 			line += "; ";
 		/// -# Now add the branches.
 			for(auto &branch : fListOfBranches) {
-				line += branch.AxisName().c_str();
+				line += branch.AxisName();
 				if(branch.IsOK()) line += Form(", %d, %g, %g", branch.NBins(), branch.From(), branch.To());
 				line += "; ";
 			}
@@ -265,13 +259,13 @@
 	const TString BranchPlotOptions::BuildHistName() const
 	{
 		/// -# Return a `nullptr` if this `BranchPlotOptions` object does not have branches or a tree name.
-			if(!fTreeName.Length())     return nullptr;
+			if(fTreeName.EqualTo(""))     return nullptr;
 			if(!fListOfBranches.size()) return nullptr;
 		/// -# The histogram name starts the name of the `TTree`.
 			TString line{Form("hist_%s_", fTreeName.Data())};
 		/// -# This is followed by the branches, which also get identifiers for the plot range.
 			for(auto &branch : fListOfBranches) {
-				line += branch.AxisName().c_str();
+				line += branch.AxisName();
 				if(branch.IsOK()) line += Form("-%d-%g-%g", branch.NBins(), branch.From(), branch.To());
 				line += "_";
 			}

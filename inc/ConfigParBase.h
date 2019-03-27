@@ -5,6 +5,7 @@
 // * ========================= * //
 // * ------- LIBRARIES ------- * //
 // * ========================= * //
+
 	#include "TString.h"
 	#include <list>
 	#include <string>
@@ -25,24 +26,21 @@
 	/// @date     March 15th, 2019
 	class ConfigParBase {
 	public:
-		ConfigParBase(const std::string &identifier);
+		ConfigParBase(const TString &identifier);
 		~ConfigParBase();
 
 		static void PrintAll();
 		static ConfigParBase* GetParameter(const TString &identifier);
-		static ConfigParBase* GetParameter(const std::string &identifier);
 		static ConfigParBase* GetCleanParameter(const TString &identifier);
-		static ConfigParBase* GetCleanParameter(const std::string &identifier);
 		static const size_t GetNParameters() { return fInstances.size(); }
 		static const std::unordered_map<std::string, ConfigParBase*>* GetMapOfParameters() { return &fInstances; }
 
-		const std::string &GetIdentifier() const { return fIdentifier; }
+		const TString &GetIdentifier() const { return fIdentifier; }
 
-		void AddValue(const TString &value);
-		void AddValue(std::string value);
+		void AddValue(TString value);
 		void ResetIfHasValue() { if(fValueIsSet) ClearValues(); }
 		const size_t GetNReadValues() const { return fReadStrings.size(); }
-		const std::list<std::string>* GetListOfValues() { return &fReadStrings; }
+		const std::list<TString>* GetListOfValues() { return &fReadStrings; }
 		const bool ConvertStringsToValue();
 		const bool ConvertValueToStrings();
 		virtual void PrintValue() const = 0;
@@ -52,13 +50,13 @@
 	protected:
 		virtual const bool ConvertStringsToValue_impl() = 0;
 		virtual const bool ConvertValueToStrings_impl() = 0;
-		std::list<std::string> fReadStrings; ///< Loaded values in string format. You can specify in derived classes how to use these values.
+		std::list<TString> fReadStrings; ///< Loaded values in string format. You can specify in derived classes how to use these values.
 		bool fValueIsSet; /// Switch that is used to prevent from double adding values to the `fReadStrings` `list`.
 
 
 	private:
 		void ClearValues() { fReadStrings.clear(); fValueIsSet = false; }
-		const std::string fIdentifier; ///< Unique identifier of the paramter. If this identifier is found in the configuration file you loaded with the `ConfigLoader`, its corresponding values will be added to `fReadStrings`. @warning The executable will `terminate` if the identifier already exists in the mapping of parameters `fInstances`.
+		const TString fIdentifier; ///< Unique identifier of the paramter. If this identifier is found in the configuration file you loaded with the `ConfigLoader`, its corresponding values will be added to `fReadStrings`. @warning The executable will `terminate` if the identifier already exists in the mapping of parameters `fInstances`.
 		static std::unordered_map<std::string, ConfigParBase*> fInstances;
 	};
 

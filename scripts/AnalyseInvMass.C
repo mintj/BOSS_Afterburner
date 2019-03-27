@@ -40,17 +40,17 @@ std::cout << "OK2" << std::endl;
 		/// -# Attempt to load three directories of ROOT files as a `BOSSOutputLoader` objects: a set of exlusive MC files, a set of inclusive MC files, and a set of data files (the BESIII measurements).
 			BOSSOutputLoader excl(config.Filename_excl, false, false);
 			if(excl.IsZombie()) {
-				TerminalIO::PrintFatalError(Form("Failed to load directory/file\n  \"%s\"", config.Filename_excl->c_str()));
+				TerminalIO::PrintFatalError(Form("Failed to load directory/file\n  \"%s\"", config.Filename_excl->Data()));
 				return;
 			}
 			BOSSOutputLoader incl(config.Filename_incl, false, false);
 			if(incl.IsZombie()) {
-				TerminalIO::PrintFatalError(Form("Failed to load directory/file\n  \"%s\"", config.Filename_incl->c_str()));
+				TerminalIO::PrintFatalError(Form("Failed to load directory/file\n  \"%s\"", config.Filename_incl->Data()));
 				return;
 			}
 			BOSSOutputLoader data(config.Filename_data, false, false);
 			if(data.IsZombie()) {
-				TerminalIO::PrintFatalError(Form("Failed to load directory/file\n  \"%s\"", config.Filename_data->c_str()));
+				TerminalIO::PrintFatalError(Form("Failed to load directory/file\n  \"%s\"", config.Filename_data->Data()));
 				return;
 			}
 

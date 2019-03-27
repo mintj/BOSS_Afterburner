@@ -25,8 +25,8 @@
 
 
 	/// Constructor that opens a `TFile` and unordered_maps its contents.
-	BOSSOutputLoader::BOSSOutputLoader(const std::string &path, bool print_branches, bool print_averages) :
-		fDirectoryPath(path.c_str())
+	BOSSOutputLoader::BOSSOutputLoader(const TString &path, bool print_branches, bool print_averages) :
+		fDirectoryPath(path)
 	{
 		/// -# Make an inventory of ROOT files in input directory and add filenames to the `fFileNames` list.
 		/// -# If `path` ends in `".root"`, treat as <i>single ROOT file</i> and attempt to load it.
@@ -83,9 +83,9 @@
 // * ======================= * //
 
 
-	ChainLoader& BOSSOutputLoader::GetChainLoader(const std::string &chainName)
+	ChainLoader& BOSSOutputLoader::GetChainLoader(const TString &chainName)
 	{
-		return TerminalIO::GetFromMap(fChains, chainName, fDirectoryPath.Data());
+		return TerminalIO::GetFromMap(fChains, chainName.Data(), fDirectoryPath.Data());
 	}
 
 
@@ -112,7 +112,7 @@
 	/// Look for a tree in the files and get its `TChain`.
 		/// @param treeName Name of the `TChain` that you are looking for.
 		/// @return TChain& Tree object that contains the trees. Returns a `nullptr` if this `TChain` does not exist.
-	TChain& BOSSOutputLoader::GetChain(const std::string &treeName)
+	TChain& BOSSOutputLoader::GetChain(const TString &treeName)
 	{
 		return GetChainLoader(treeName).GetChain();
 	}
@@ -125,9 +125,9 @@
 
 
 	/// Check if file has chain with name `chainName`.
-	const bool BOSSOutputLoader::HasChain(const std::string &chainName) const
+	const bool BOSSOutputLoader::HasChain(const TString &chainName) const
 	{
-		if(fChains.find(chainName) == fChains.end()) return false;
+		if(fChains.find(chainName.Data()) == fChains.end()) return false;
 		return true;
 	}
 
@@ -228,10 +228,10 @@
 			TIter next(chain->GetListOfBranches());
 			TObject *obj = nullptr;
 			while(obj = next()) {
-				const std::string branchName { obj->GetName() };
-				if(!branchName.compare("index")) continue;
-				cuts[branchName].resize(3);
-				if(branchName.length() > w_name) w_name = branchName.length();
+				const TString branchName { obj->GetName() };
+				if(branchName.EqualTo("index")) continue;
+				cuts[branchName.Data()].resize(3);
+				if(branchName.Length() > w_name) w_name = branchName.Length();
 			}
 		/// <li> @b CASE1. If `"_cutvalues"` contains a branch called `"index"`, assume that the `TTree` contains double arrays.
 			if(TerminalIO::MapHasKey(chainLoader->Get<int>(), "index")) for(auto &cut : cuts) {
@@ -310,14 +310,14 @@
 		/// <li> Print loaded values as a table: one row per parameters.
 			/// <ol>
 			/// <li> Get width of columns (`w_name` has to be redone because of the table headers).
-				const std::string h_name  { "CUT NAME" };
-				const std::string h_min   { "MIN" };
-				const std::string h_max   { "MAX" };
-				const std::string h_count { "COUNT" };
-				w_name = h_name.size();
-				int w_min   = h_min  .size();
-				int w_max   = h_max  .size();
-				int w_count = h_count.size();
+				const TString h_name  { "CUT NAME" };
+				const TString h_min   { "MIN" };
+				const TString h_max   { "MAX" };
+				const TString h_count { "COUNT" };
+				w_name = h_name.Length();
+				int w_min   = h_min  .Length();
+				int w_max   = h_max  .Length();
+				int w_count = h_count.Length();
 				for(auto &cut : cuts) {
 					// * Name *
 					if(cut.first.size() > w_name) w_name = cut.first.size();
@@ -349,9 +349,9 @@
 				std::cout << "  " << std::setfill('-') << std::setw(w_name+w_min+w_max+w_count+9) << "" << std::endl;
 				std::cout << std::setfill(' ');
 			/// <li> Create a list of cut names ordered by counter (using `std::list::sort` and a lambda).
-				std::list<std::pair<std::string, unsigned long long> > cutNames;
+				std::list<std::pair<TString, unsigned long long> > cutNames;
 				for(auto &cut : cuts) cutNames.push_back(std::make_pair(cut.first, cut.second[2]));
-				cutNames.sort([](std::pair<std::string, unsigned long long> const & a, std::pair<std::string, unsigned long long> const & b)
+				cutNames.sort([](std::pair<TString, unsigned long long> const & a, std::pair<TString, unsigned long long> const & b)
 				{
 					return a.second != b.second ?
 						a.second > b.second :
@@ -361,7 +361,7 @@
 				for(auto &cutName : cutNames) {
 					/// <ol>
 					/// <li> Print a horizontal line just before counter `"N_events"`.
-						if(!cutName.first.compare("N_events")) {
+						if(cutName.first.EqualTo("N_events")) {
 							std::cout << "  " << std::setfill('-') << std::setw(w_name+w_min+w_max+w_count+9) << "" << std::endl;
 							std::cout << std::setfill(' ');
 						}
@@ -369,12 +369,12 @@
 						std::cout << "  " << std::setw(w_name) << std::left << cutName.first << " | ";
 					/// <li> Column 2: @b minimum, if available.
 						std::cout << std::setw(w_min) << std::right;
-						if(cuts[cutName.first][0] > -DBL_MAX) std::cout << cuts[cutName.first][0];
+						if(cuts[cutName.first.Data()][0] > -DBL_MAX) std::cout << cuts[cutName.first.Data()][0];
 						else std::cout << "";
 						std::cout << " | ";
 					/// <li> Column 3: @b maximum, if available.
 						std::cout << std::setw(w_max) << std::right;
-						if(cuts[cutName.first][1] < DBL_MAX) std::cout << cuts[cutName.first][1];
+						if(cuts[cutName.first.Data()][1] < DBL_MAX) std::cout << cuts[cutName.first.Data()][1];
 						else std::cout << "";
 						std::cout << " | ";
 					/// <li> Column 4: @b counter, if available.
@@ -490,8 +490,8 @@
 		// * Sort resulting list based on number of entries * //
 		outputList.sort([](ChainLoader* const & a, ChainLoader* const & b)
 		{
-			std::string nameA(a->GetChain().GetName());
-			std::string nameB(b->GetChain().GetName());
+			TString nameA(a->GetChain().GetName());
+			TString nameB(b->GetChain().GetName());
 			return a->GetEntries() != b->GetEntries() ?
 				a->GetEntries() > b->GetEntries() :
 				nameA < nameB;

@@ -5,13 +5,14 @@
 // * ------- LIBRARIES ------- * //
 // * ========================= * //
 
-	#include "ReconstructedParticle.h"
-	#include "CommonFunctions.h"
 	#include "BranchPlotOptions.h"
+	#include "CommonFunctions.h"
+	#include "ReconstructedParticle.h"
 	#include "TChain.h"
 	#include "TH1F.h"
 	#include "TH2F.h"
 	#include "TObject.h"
+	#include "TString.h"
 	#include "TTree.h"
 	#include <string>
 	#include <unordered_map>
@@ -49,7 +50,7 @@
 			template<typename TYPE> inline
 			std::unordered_map<std::string, TYPE>& Get(); ///< Get mapping of branches for a certaine `typename` (specified through `template` specialisation).
 			template<typename TYPE> inline
-			TYPE& Get(const std::string &branchName);
+			TYPE& Get(const TString &branchName);
 			///@}
 
 		/// @name Setters
@@ -95,7 +96,7 @@
 		/// @name Helper functions
 			///@{
 			template<typename TYPE> inline
-			TYPE& GetHelper(std::unordered_map<std::string, TYPE> &map, const std::string &name);
+			TYPE& GetHelper(std::unordered_map<std::string, TYPE> &map, const TString &name);
 			template<typename TYPE> inline
 			void SetAddress(TObject* obj, std::unordered_map<std::string, TYPE> &map);
 			template<typename TYPE> inline
@@ -156,7 +157,7 @@
 	/// Get branch of this TChain with `branchName`.
 	/// You will have to know and specify the `typename` of the branch using e.g. `Get<double>` in the case of a `double`.
 	template<typename TYPE> inline
-	TYPE& ChainLoader::Get(const std::string &branchName)
+	TYPE& ChainLoader::Get(const TString &branchName)
 	{
 		return CommonFunctions::TerminalIO::GetFromMap(Get<TYPE>(), branchName, fChain.GetName());
 	}

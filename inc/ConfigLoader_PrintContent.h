@@ -9,7 +9,7 @@
 	#include "CommonFunctions.h"
 	#include "ConfigLoader.h"
 	#include "ConfigParameter.h"
-	#include <string>
+	#include "TString.h"
 
 
 
@@ -26,10 +26,10 @@
 	class ConfigLoader_PrintContent : public ConfigLoader
 	{
 	public:
-		ConfigLoader_PrintContent(const std::string &path, const bool print=true) : ConfigLoader(path, print) { LoadConfiguration(path); }
+		ConfigLoader_PrintContent(const TString &path, const bool print=true) : ConfigLoader(path, print) { LoadConfiguration(path); }
 		/// @name I/O strings
 			///@{
-			ConfigParameter<std::string> fInputFilename{"Input file or directory", "/mnt/d/IHEP/root/D0phi_KpiKK/Jpsi2009+2012_dst"};
+			ConfigParameter<TString> fInputFilename{"Input file or directory", "/mnt/d/IHEP/root/D0phi_KpiKK/Jpsi2009+2012_dst"};
 			///@}
 
 

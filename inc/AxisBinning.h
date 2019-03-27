@@ -4,8 +4,9 @@
 // * ========================= * //
 // * ------- LIBRARIES ------- * //
 // * ========================= * //
+
 	#include "CommonFunctions.h"
-	#include <string>
+	#include "TString.h"
 	#include <utility>
 
 
@@ -25,13 +26,13 @@
 	{
 	public:
 		AxisBinning() : fIsOK(false), fNBins(0), fBinWidth(0.) {}
-		AxisBinning(const std::string &name, const int &nbins, const double &from, const double &to);
-		AxisBinning(const std::string &name, const double &width, const double &from, const double &to);
-		AxisBinning(const std::string &input);
-		void SetName(const std::string &name) { fAxisName = name; }
+		AxisBinning(const TString &name, const int &nbins, const double &from, const double &to);
+		AxisBinning(const TString &name, const double &width, const double &from, const double &to);
+		AxisBinning(const TString &input);
+		void SetName(const TString &name) { fAxisName = name; }
 		void Set(const int &nbins, const double &from, const double &to);
 		void Set(const double &width, const double &from, const double &to);
-		void Set(const std::string &binning);
+		void Set(const TString &binning);
 		void SetBinWidth(const double &width);
 		void SetNBins(const int &nbins);
 		void SetRange(const double &from, const double &to);
@@ -43,11 +44,11 @@
 		const double& To() const { if(fIsOK) return fRange.second; else return 0.; }
 		const double& BinWidth() const { if(fIsOK) return fBinWidth; else return 0.; }
 		const double ComputeRange() const { return ComputeRange(fRange.first, fRange.second); }
-		const std::string& AxisName() const { return fAxisName; }
+		const TString& AxisName() const { return fAxisName; }
 		void Print() const;
 
 	private:
-		std::string fAxisName;
+		TString fAxisName;
 		bool fIsOK; ///< Switch that keeps track of whether arguments have been set correctly.
 		int fNBins; ///< The number of bins on the axis.
 		double fBinWidth; ///< The number of bins on the axis.CheckBinWidth

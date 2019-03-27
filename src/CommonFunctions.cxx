@@ -597,62 +597,24 @@
 // * ==================================== * //
 
 
-	/// Remove all leading and trailing whitespaces from a string.
-		/// @todo This function already exists as such in `TString`. Migrate from `std::string` to `TString`.
-	std::string &CommonFunctions::String::Trim(std::string &input)
+	/// Remove all leading and trailing spaces and tabs characters from a string.
+	void CommonFunctions::String::RemoveWhitespaces(TString &input)
 	{
-		while(input.front()==' ' || input.front()=='\t') input.erase(0, 1);
-		while(input.back() ==' ' || input.back() =='\t') input.pop_back();
-		return input;
-	}
-
-
-	/// Remove all leading and trailing characters of type `c` from a string.
-	std::string &CommonFunctions::String::Trim(std::string &input, char c)
-	{
-		while(input.front()==c) input.erase(0, 1);
-		while(input.back() ==c) input.pop_back();
-		return input;
-	}
-
-
-	/// Remove all leading and trailing whitespaces from a string.
-		/// @todo This function already exists as such in `TString`. Migrate from `std::string` to `TString`.
-	TString &CommonFunctions::String::Trim(TString &input)
-	{
+		while(input.EndsWith(" ")   || input.EndsWith("\t"))   input.Chop();
 		while(input.BeginsWith(" ") || input.BeginsWith("\t")) input.Remove(0, 1);
-		while(input.EndsWith  (" ") || input.EndsWith  ("\t")) input.Resize(input.Length()-1);
-		return input;
-	}
-
-
-	/// Remove all leading and trailing characters of type `c` from a string.
-	TString &CommonFunctions::String::Trim(TString &input, char c)
-	{
-		while(input.BeginsWith(c)) input.Remove(0, 1);
-		while(input.EndsWith(Form("%c", c))) input.Resize(input.Length()-1);
-		return input;
 	}
 
 
 	/// Check if a string starts with a comment identifier (such as `//` in the case of `C++`).
-	const bool CommonFunctions::String::IsComment(std::string input)
+	const bool CommonFunctions::String::IsComment(TString input)
 	{
-		Trim(input);
-		input = input.substr(0,2);
-		if(!input.compare("//")) return true; // C++ line comment
-		if(!input.compare("/*")) return true; // C++ begin block comment
-		if(input.front() == '*') return true; // C++ continue/end block comment
-		if(input.front() == '#') return true; // bash comment
-		if(input.front() == '%') return true; // LaTeX comment
+		RemoveWhitespaces(input);
+		if(input.BeginsWith("//")) return true; // C++ line comment
+		if(input.BeginsWith("/*")) return true; // C++ begin block comment
+		if(input.BeginsWith("*"))  return true; // C++ continue/end block comment
+		if(input.BeginsWith("#"))  return true; // bash comment
+		if(input.BeginsWith("%%")) return true; // LaTeX comment
 		return false;
-	}
-
-
-	/// Check if a string starts with a comment identifier (such as `//` in the case of `C++`).
-	const bool CommonFunctions::String::IsComment(const TString &input)
-	{
-		return IsComment((std::string)(input.Data()));
 	}
 
 
@@ -666,16 +628,16 @@
 		/// @param code An [ANSI escape colour code](https://en.wikipedia.org/wiki/ANSI_escape_code). For instance, `31` would be red.
 		/// @param message The message you want to print.
 		/// @param qualifier If added, this will print `"<qualifier>: " in bold in front of the message.
-	void CommonFunctions::TerminalIO::ColourPrint(const char code, const std::string &message, const std::string &qualifier)
+	void CommonFunctions::TerminalIO::ColourPrint(const char code, const TString &message, const TString &qualifier)
 	{
-		if(qualifier.size()) printf("\033[1;%dm%s: \033[0m", code, qualifier.c_str());
-		printf("\033[%dm%s\033[0m\n", code, message.c_str());
+		if(qualifier.Length()) printf("\033[1;%dm%s: \033[0m", code, qualifier.Data());
+		printf("\033[%dm%s\033[0m\n", code, message.Data());
 	}
 
 
 	/// Print a **fatal error** message (that is, one that terminates) in red.
 	/// @warning Calling this function will terminate the entire programme.
-	void CommonFunctions::TerminalIO::PrintFatalError(const std::string &message)
+	void CommonFunctions::TerminalIO::PrintFatalError(const TString &message)
 	{
 		ColourPrint(31, message, "FATAL ERROR");
 		std::terminate();
@@ -683,14 +645,14 @@
 
 
 	/// Print a **success** message in green.
-	void CommonFunctions::TerminalIO::PrintSuccess(const std::string &message)
+	void CommonFunctions::TerminalIO::PrintSuccess(const TString &message)
 	{
 		ColourPrint(32, message);
 	}
 
 
 	/// Print a **warning** message in yellow.
-	void CommonFunctions::TerminalIO::PrintWarning(const std::string &message)
+	void CommonFunctions::TerminalIO::PrintWarning(const TString &message)
 	{
 		ColourPrint(33, message, "WARNING");
 	}

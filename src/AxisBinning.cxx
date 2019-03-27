@@ -3,7 +3,6 @@
 // * ========================= * //
 	#include "AxisBinning.h"
 	#include "CommonFunctions.h"
-	#include "TString.h"
 	#include "TList.h"
 	#include <sstream>
 	#include <cmath>
@@ -16,7 +15,7 @@
 // * =========================== * //
 
 	/// Construct the binnings from **number of bins**.
-	AxisBinning::AxisBinning(const std::string &name, const int &nbins, const double &from, const double &to) :
+	AxisBinning::AxisBinning(const TString &name, const int &nbins, const double &from, const double &to) :
 		fAxisName(name), fIsOK(false), fNBins(0), fBinWidth(0.), fRange(0., 0.)
 	{
 		Set(nbins, from, to);
@@ -24,7 +23,7 @@
 
 
 	/// Construct the binnings from **bin width**.
-	AxisBinning::AxisBinning(const std::string &name, const double &width, const double &from, const double &to) :
+	AxisBinning::AxisBinning(const TString &name, const double &width, const double &from, const double &to) :
 		fAxisName(name), fIsOK(false), fNBins(0), fBinWidth(0.), fRange(0., 0.)
 	{
 		Set(width, from, to);
@@ -33,11 +32,11 @@
 
 	/// Construct the binnings from a string.
 	/// This constructor facilitates the `ConfigParameter::ConvertStringsToValue_impl_str` method.
-	AxisBinning::AxisBinning(const std::string &input) :
+	AxisBinning::AxisBinning(const TString &input) :
 		fIsOK(false), fNBins(0), fBinWidth(0.), fRange(0., 0.)
 	{
 		/// -# Check input line for the number of commas (`,`).
-			TString line { input.c_str() };
+			TString line { input };
 			auto ncommas { line.CountChar(',') };
 		/// -# If there are no commas in the `input` line, set only the axis name and abort. This means the `input` line is interpreted as the axis name only.
 			if(!ncommas) {
@@ -46,7 +45,7 @@
 			}
 		/// -# **Abort** if there the number of commas is not three (you need a name, a bin width / number of bins and a from-to range)
 			if(ncommas!=3 && ncommas!=0) {
-				TerminalIO::PrintWarning(Form("AxisBinning construction from string \"%s\" has to contain 3 commas", input.c_str()));
+				TerminalIO::PrintWarning(Form("AxisBinning construction from string \"%s\" has to contain 3 commas", input.Data()));
 				return;
 			}
 		/// -# Get name from block before first comma.
@@ -100,14 +99,13 @@
 
 
 	/// Intelligently set binnins from a string.
-	void AxisBinning::Set(const std::string &binning)
+	void AxisBinning::Set(const TString &binning)
 	{
 		/// -# **Abort** if the string does not contain two commas.
-			if(!binning.size()) return;
-			int ncommas{0};
-			for(auto& c : binning) if(c==',') ++ncommas;
+			if(binning.CompareTo("")) return;
+			int ncommas{binning.CountChar(',')};
 			if(ncommas!=2) {
-				TerminalIO::PrintWarning(Form("Binning string \"%s\" has to contain 2 commas", binning.c_str()));
+				TerminalIO::PrintWarning(Form("Binning string \"%s\" has to contain 2 commas", binning.Data()));
 				return;
 			}
 		/// -# Set local variables to load from the string.
@@ -116,20 +114,20 @@
 			double from  = 0.;
 			double to    = 0.;
 		/// -# Import the three arguments from the string.
-			TString line(binning.c_str());
+			TString line(binning.Data());
 			TString tok;
 			UChar_t sw = 0;
 			Ssiz_t start{0};
 			while(line.Tokenize(tok, start, ",")) {
 				switch(sw) {
 					case 0 :
-						if(tok.Contains('.') || tok.Contains('e') || tok.Contains('E')) width = tok.Atof();
+						if(tok.Contains(".") || tok.Contains("e") || tok.Contains("E")) width = tok.Atof();
 						else nbins = tok.Atoi();
 						break;
 					case 1 : from = tok.Atof(); break;
 					case 2 : to   = tok.Atof(); break;
 					default :
-						TerminalIO::PrintFatalError("AxisBinning::Set(const std::string&)");
+						TerminalIO::PrintFatalError("AxisBinning::Set(const TString&)");
 						std::terminate();
 				}
 				++sw;

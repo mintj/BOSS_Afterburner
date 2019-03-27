@@ -9,7 +9,8 @@
 	#include "AxisBinning.h"
 	#include "CommonFunctions.h"
 	#include "ConfigParameter.h"
-	#include <string>
+	#include "TString.h"
+	#include <list>
 
 
 
@@ -58,19 +59,17 @@
 	class ConfigLoader
 	{
 	public:
-		ConfigLoader(const std::string &path, const bool print=true) :
+		ConfigLoader(const TString &path, const bool print=true) :
 			fConfigPath(path), fPrint("Print loaded configuration parameters", print) {}
 
 	protected:
-		size_t LoadConfiguration(const std::string &path);
-		ConfigParBase* ExtractParameter(std::string line);
-		void ImportValues(ConfigParBase *par, std::string line);
-		void ImportValues(ConfigParBase *par, const TString &line);
-		void AddValue(ConfigParBase *par, std::string &line);
+		size_t LoadConfiguration(const TString &path);
+		ConfigParBase* ExtractParameter(TString line);
+		void ImportValues(ConfigParBase *par, TString line);
 		void AddValue(ConfigParBase *par, TString &line);
 
 	private:
-		const std::string fConfigPath;
+		const TString fConfigPath;
 		ConfigParameter<bool> fPrint; ///< Parameter that decides whether or not to call `ConfigParBase::PrintAll` after all parmeters have been loaded.
 	};
 

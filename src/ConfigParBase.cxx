@@ -1,9 +1,9 @@
 // * ========================= * //
 // * ------- LIBRARIES ------- * //
 // * ========================= * //
+
 	#include "ConfigParBase.h"
 	#include "CommonFunctions.h"
-	#include "TString.h"
 	#include <iomanip>
 	using namespace CommonFunctions;
 
@@ -16,20 +16,20 @@
 
 	/// Constructor for the `ArgPair` classes that is called when defining the different parameter names in the constructor of `ChainLoader`.
 	/// A new entry is made in the `fInstances` with key `identifier`. @b Aborts if `fInstances` already contains a key with string `identifier`.
-	ConfigParBase::ConfigParBase(const std::string &identifier) :
+	ConfigParBase::ConfigParBase(const TString &identifier) :
 		fIdentifier(identifier),
 		fValueIsSet(false)
 	{
-		if(!(fInstances.find(fIdentifier) == fInstances.end()))
-			TerminalIO::PrintFatalError(Form("Parameter \"%s\" is already defined", fIdentifier.c_str()));
-		fInstances.emplace(make_pair(fIdentifier, this));
+		if(!(fInstances.find(fIdentifier.Data()) == fInstances.end()))
+			TerminalIO::PrintFatalError(Form("Parameter \"%s\" is already defined", fIdentifier.Data()));
+		fInstances.emplace(std::make_pair(fIdentifier.Data(), this));
 	}
 
 
 	/// The destructor removes key `fIdentifier` with its value (a pointer to `this` object) from the `fInstancess`.
 	ConfigParBase::~ConfigParBase()
 	{
-		fInstances.erase(fIdentifier);
+		fInstances.erase(fIdentifier.Data());
 	}
 
 
@@ -42,15 +42,10 @@
 // * ====================== * //
 
 
-	void ConfigParBase::AddValue(const TString &value)
+	void ConfigParBase::AddValue(TString value)
 	{
-		AddValue((std::string)(value.Data()));
-	}
-
-
-	void ConfigParBase::AddValue(std::string value)
-	{
-		fReadStrings.push_back(value);
+std::cout << fIdentifier << " --> " << value << std::endl; 
+		fReadStrings.push_back(value.Data());
 	}
 
 
@@ -59,7 +54,7 @@
 	const bool ConfigParBase::ConvertStringsToValue()
 	{
 		if(!fReadStrings.size()) {
-			CommonFunctions::TerminalIO::PrintWarning(Form("No values to convert for parameter \"%s\"", GetIdentifier().c_str()));
+			CommonFunctions::TerminalIO::PrintWarning(Form("No values to convert for parameter \"%s\"", GetIdentifier().Data()));
 			return false;
 		}
 		if(!ConvertStringsToValue_impl()) return false;
@@ -88,32 +83,14 @@
 
 	/// Get access to one of the declared `ConfigParBase` objects.
 	/// @return Returns a `nullptr` if there is no key with name `identifier`.
-	ConfigParBase* ConfigParBase::GetParameter(const std::string &identifier)
+	ConfigParBase* ConfigParBase::GetParameter(const TString &identifier)
 	{
-		auto key = fInstances.find(identifier);
+		auto key = fInstances.find(identifier.Data());
 		if(key == fInstances.end() || !key->second) {
-			TerminalIO::PrintWarning(Form("Parameter \"%s\" has not been defined", identifier.c_str()));
+			TerminalIO::PrintWarning(Form("Parameter \"%s\" has not been defined", identifier.Data()));
 			return nullptr;
 		}
 		return key->second;
-	}
-
-
-	/// Get access to one of the declared `ConfigParBase` objects.
-	/// @return Returns a `nullptr` if there is no key with name `identifier`.
-	ConfigParBase* ConfigParBase::GetParameter(const TString &identifier)
-	{
-		return GetParameter((std::string)(identifier.Data()));
-	}
-
-
-	/// Get access to one of the declared `ConfigParBase` objects, but also clean.
-	/// This method is used in `LoadConfiguration` to ensure that default values are overwritten if available.
-	ConfigParBase* ConfigParBase::GetCleanParameter(const std::string &identifier)
-	{
-		auto par = GetParameter(identifier);
-		if(par) par->ResetIfHasValue();
-		return par;
 	}
 
 
@@ -121,7 +98,10 @@
 	/// This method is used in `LoadConfiguration` to ensure that default values are overwritten if available.
 	ConfigParBase* ConfigParBase::GetCleanParameter(const TString &identifier)
 	{
-		return GetCleanParameter((std::string)(identifier.Data()));
+		auto par = GetParameter(identifier);
+if(!par) std::cout << "Could not find \"" << identifier << "\"" << std::endl;
+		if(par) par->ResetIfHasValue();
+		return par;
 	}
 
 

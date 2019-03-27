@@ -35,14 +35,14 @@
 	template<class TYPE>
 	class ConfigParameter : public ConfigParBase {
 	public:
-		ConfigParameter(const std::string &identifier);
-		ConfigParameter(const std::string &identifier, const TYPE &default_value);
+		ConfigParameter(const TString &identifier);
+		ConfigParameter(const TString &identifier, const TYPE &default_value);
 		TYPE& Get() { return fValue; }
     TYPE* operator->() { return &fValue; }
 		TYPE& operator*() { return fValue; }
 		void operator=(const TYPE &val) { fValue = val; ConvertValueToStrings(); }
-		const bool operator==(const std::string &data) const { return !GetIdentifier().compare(data); }
-		const bool operator!=(const std::string &data) const { return  GetIdentifier().compare(data); }
+		const bool operator==(const TString &data) const { return  GetIdentifier().EqualTo(data); }
+		const bool operator!=(const TString &data) const { return !GetIdentifier().EqualTo(data); }
 		operator TYPE() { return fValue; }
 		void PrintValue() const;
 	private:
@@ -66,7 +66,7 @@
 	template class ConfigParameter<bool>;
 	template class ConfigParameter<std::list<BranchPlotOptions> >;
 	template class ConfigParameter<std::list<std::pair<ReconstructedParticle, BranchPlotOptions> > >;
-	template class ConfigParameter<std::string>;
+	template class ConfigParameter<TString>;
 
 
 
@@ -76,12 +76,12 @@
 
 
 	template<class TYPE> inline
-	ConfigParameter<TYPE>::ConfigParameter(const std::string &identifier) :
+	ConfigParameter<TYPE>::ConfigParameter(const TString &identifier) :
 		ConfigParBase(identifier) {}
 
 
 	template<class TYPE> inline
-	ConfigParameter<TYPE>::ConfigParameter(const std::string &identifier, const TYPE &default_value) :
+	ConfigParameter<TYPE>::ConfigParameter(const TString &identifier, const TYPE &default_value) :
 		ConfigParBase(identifier), fValue(default_value)
 	{
 		if(ConvertValueToStrings()) fValueIsSet = true;
@@ -115,7 +115,7 @@
 			return false;
 		}
 		ss << fValue.NBins() << ", " << fValue.From() << ", " << fValue.To();
-		AddValue(ss.str());
+		AddValue(ss.str().c_str());
 		return true;
 	}
 
@@ -124,8 +124,8 @@
 	template<> inline
 	const bool ConfigParameter<bool>::ConvertValueToStrings_impl()
 	{
-		if(fValue) AddValue((std::string)"true");
-		else       AddValue((std::string)"false");
+		if(fValue) AddValue("true");
+		else       AddValue("false");
 		return true;
 	}
 
@@ -152,9 +152,9 @@
 	const bool ConfigParameter<std::list<std::pair<ReconstructedParticle, BranchPlotOptions> > >::ConvertValueToStrings_impl()
 	{
 		for(auto &it : fValue) {
-			AddValue((std::string)Form("%d", it.first.GetPDGCode()));
-			AddValue((std::string)it.first.GetDaughterLabel());
-			AddValue((std::string)it.second.BuildOriginalString().Data());
+			AddValue((TString)Form("%d", it.first.GetPDGCode()));
+			AddValue((TString)it.first.GetDaughterLabel());
+			AddValue((TString)it.second.BuildOriginalString().Data());
 		}
 		return true;
 	}
@@ -177,7 +177,7 @@
 	}
 
 
-	/// `ConvertStringsToValue` handler for an object that can be contructed from a `std::string`.
+	/// `ConvertStringsToValue` handler for an object that can be contructed from a `TString`.
 	template<class TYPE> inline
 	const bool ConfigParameter<TYPE>::ConvertStringsToValue_impl_str()
 	{
@@ -201,8 +201,8 @@
 	{
 		if(!HasSingleString()) return false;
 		if(
-			!fReadStrings.front().compare("false") ||
-			!fReadStrings.front()[0] == '0') fValue = false;
+			fReadStrings.front().EqualTo("false") ||
+			fReadStrings.front()[0] == '0') fValue = false;
 		else fValue = true;
 		return true;
 	}
@@ -228,19 +228,19 @@ std::cout << "Till ConvertStringsToValue_impl" << std::endl;
 		/// <li> **Abort** if the number of read strings for this parameter is not a multiple of 3. Each batch of 3 read values is used to construct a pair of a `ReconstructedParticle` with a `BranchPlotOptions`.
 			if(fReadStrings.size()%3 != 0) {
 				CommonFunctions::TerminalIO::PrintWarning(Form(
-					"Converting parameter \"%s\" failed because it needs exactly 3 read values", GetIdentifier().c_str()));
+					"Converting parameter \"%s\" failed because it needs exactly 3 read values", GetIdentifier().Data()));
 				return false;
 			}
 			for(auto it = fReadStrings.begin(); it != fReadStrings.end(); ++it) {
 		/// <li> Read value 1: the PDG code or name of the decaying particle.
-			TString pdgName{it->c_str()};
+			TString pdgName{it->Data()};
 			auto pdgCode{pdgName.Atoi()};
 		/// <li> Read value 2: the daughters of the decaying particle.
 			++it;
-			TString daughters{it->c_str()};
+			TString daughters{it->Data()};
 		/// <li> Read value 3: the input string for constructing the `BranchPlotOptions` object.
 			++it;
-			std::string options{it->c_str()};
+			TString options{it->Data()};
 		/// <li> Insert a pair (using constructor brackets) into the `fValue` list.
 			if(pdgCode) fValue.push_back(std::make_pair(ReconstructedParticle{pdgCode,        daughters.Data()}, BranchPlotOptions{options}));
 			else        fValue.push_back(std::make_pair(ReconstructedParticle{pdgName.Data(), daughters.Data()}, BranchPlotOptions{options}));
@@ -252,7 +252,7 @@ std::cout << "Till ConvertStringsToValue_impl" << std::endl;
 
 	/// `ConvertStringsToValue` handler for `string`s.
 	template<> inline
-	const bool ConfigParameter<std::string>::ConvertStringsToValue_impl()
+	const bool ConfigParameter<TString>::ConvertStringsToValue_impl()
 	{
 		return ConvertStringsToValue_impl_str();
 	}
@@ -312,7 +312,7 @@ std::cout << "Till ConvertStringsToValue_impl" << std::endl;
 
 	/// In case of a `string` `fValue`, encapsulate its value in double quotations marks (`"`).
 	template<> inline
-	void ConfigParameter<std::string>::PrintValue() const
+	void ConfigParameter<TString>::PrintValue() const
 	{
 		std::cout << "\"" << fValue << "\"";
 	}
@@ -330,7 +330,7 @@ std::cout << "Till ConvertStringsToValue_impl" << std::endl;
 	const bool ConfigParameter<TYPE>::HasSingleString() const
 	{
 		if(fReadStrings.size() > 1) {
-			CommonFunctions::TerminalIO::PrintWarning(Form("Parameter \"%s\" is single value, but has multiple read values\n  --> Maybe define another template specialisation of ConvertStringsToValue?", GetIdentifier().c_str()));
+			CommonFunctions::TerminalIO::PrintWarning(Form("Parameter \"%s\" is single value, but has multiple read values\n  --> Maybe define another template specialisation of ConvertStringsToValue?", GetIdentifier().Data()));
 			return false;
 		}
 		return true;

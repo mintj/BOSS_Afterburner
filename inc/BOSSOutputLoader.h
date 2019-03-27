@@ -4,8 +4,9 @@
 // * ========================= * //
 // * ------- LIBRARIES ------- * //
 // * ========================= * //
-	#include "ChainLoader.h"
+
 	#include "BranchPlotOptions.h"
+	#include "ChainLoader.h"
 	#include "TChain.h"
 	#include "TString.h"
 	#include <list>
@@ -33,13 +34,13 @@
 		/// @name Constructors
 			///@{
 			BOSSOutputLoader() {}
-			BOSSOutputLoader(const std::string &directoryPath, bool print_branches = true, bool print_averages = false);
+			BOSSOutputLoader(const TString &directoryPath, bool print_branches = true, bool print_averages = false);
 			///@}
 
 
 		/// @name Information functions
 			///@{
-			const bool HasChain(const std::string &chainName) const;
+			const bool HasChain(const TString &chainName) const;
 			TH1F* Draw(const char* chainName, const char* branchX, const Int_t nBinx, const double x1, const double x2, Option_t *option="", const TString &logScale="", const char* cut="");
 			TH2F* Draw(const char* chainName, const char* branchX, const char* branchY, const Int_t nBinx, const double x1, const double x2, const Int_t nBiny, const double y1, const double y2, Option_t *option="", const TString &logScale="", const char* cut="");
 			bool IsZombie();
@@ -59,11 +60,11 @@
 			///@{
 			Long64_t GetEntries(const char* chainName);
 			Long64_t GetLargestEntries() const;
-			ChainLoader& GetChainLoader(const std::string &chainName);
-			ChainLoader& operator[](const std::string &chainName) { return GetChainLoader(chainName); }
-			TChain& GetChain(const std::string &chainName);
+			ChainLoader& GetChainLoader(const TString &chainName);
+			ChainLoader& operator[](const TString &chainName) { return GetChainLoader(chainName); }
+			TChain& GetChain(const TString &chainName);
 			template<typename TYPE> inline
-			TYPE& GetBranch(const std::string &chainName, const std::string &branchName);
+			TYPE& GetBranch(const TString &chainName, const TString &branchName);
 			std::unordered_map<std::string, ChainLoader>& GetChains() { return fChains; }
 			///@}
 
@@ -96,7 +97,7 @@
 	/// Get a certain branch with name `branchName` in TTree with name `chainName`.
 	/// @warning The program will `terminate` if the branch and/or tree does not exist in the file.
 	template<typename TYPE> inline
-	TYPE& BOSSOutputLoader::GetBranch(const std::string &chainName, const std::string &branchName)
+	TYPE& BOSSOutputLoader::GetBranch(const TString &chainName, const TString &branchName)
 	{
 		return GetChainLoader(chainName).Get<TYPE>(branchName);
 	}
