@@ -5,6 +5,7 @@
 // * ------- LIBRARIES ------- * //
 // * ========================= * //
 
+	#include "FitPars.h"
 
 
 
@@ -21,9 +22,11 @@
 	/// A `FitPars_DoubleGaussian` object is added to 
 	/// @author   Remco de Boer 雷穆克 (r.e.deboer@students.uu.nl or remco.de.boer@ihep.ac.cn)
 	/// @date     Mrach 28th, 2019
-	class FitPars_DoubleGaussian : public FitPars_DoubleGaussian
+	class FitPars_DoubleGaussian : public FitPars
 	{
 	public:
+		FitPars_DoubleGaussian(const std::string &input) : FitPars(input) {};
+		virtual void Import_impl(const std::string &input);
 	private:
 	};
 

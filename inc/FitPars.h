@@ -5,6 +5,8 @@
 // * ------- LIBRARIES ------- * //
 // * ========================= * //
 
+	#include <list>
+	#include <string>
 
 
 
@@ -24,6 +26,10 @@
 	class FitPars
 	{
 	public:
+		FitPars(const std::list<std::string> &input);
+		void Import(const std::list<std::string> &input);
+		virtual void Import_impl(const std::list<std::string> &input) = 0;
+
 		/// @name Enumerate for fit types
 			///@{
 			enum ESignalType {
